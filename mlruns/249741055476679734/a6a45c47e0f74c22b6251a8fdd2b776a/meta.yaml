@@ -1,0 +1,15 @@
+artifact_uri: file:///home/chaima/ml_project_chaimatlili/mlruns/249741055476679734/a6a45c47e0f74c22b6251a8fdd2b776a/artifacts
+end_time: 1740254106368
+entry_point_name: ''
+experiment_id: '249741055476679734'
+lifecycle_stage: active
+run_id: a6a45c47e0f74c22b6251a8fdd2b776a
+run_name: abundant-swan-141
+run_uuid: a6a45c47e0f74c22b6251a8fdd2b776a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740254106357
+status: 3
+tags: []
+user_id: chaima

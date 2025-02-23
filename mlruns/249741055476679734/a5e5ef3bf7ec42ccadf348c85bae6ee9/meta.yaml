@@ -1,0 +1,15 @@
+artifact_uri: file:///home/chaima/ml_project_chaimatlili/mlruns/249741055476679734/a5e5ef3bf7ec42ccadf348c85bae6ee9/artifacts
+end_time: 1740253986000
+entry_point_name: ''
+experiment_id: '249741055476679734'
+lifecycle_stage: active
+run_id: a5e5ef3bf7ec42ccadf348c85bae6ee9
+run_name: model_training
+run_uuid: a5e5ef3bf7ec42ccadf348c85bae6ee9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740253981261
+status: 3
+tags: []
+user_id: chaima

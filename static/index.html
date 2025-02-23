@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction de Churn</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Ensure the content aligns at the top */
+            height: 100vh;
+            overflow: auto; /* Allow scrolling if necessary */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #3498db;
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: #fff;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .result.success {
+            color: #e74c3c;
+        }
+
+        .result.error {
+            
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Prédiction de Churn</h1>
+            <h2>Entrez les informations du client</h2>
+            <form id="churnForm">
+                <label for="State">État</label>
+                <input type="text" id="State" required>
+
+                <label for="Account_length">Durée de l'abonnement (en jours)</label>
+                <input type="text" id="Account_length" required>
+
+                <label for="Area_code">Code de zone</label>
+                <input type="text" id="Area_code" required>
+
+                <label for="International_plan">Plan International</label>
+                <input type="text" id="International_plan" required>
+
+                <label for="Voice_mail_plan">Plan de messagerie vocale</label>
+                <input type="text" id="Voice_mail_plan" required>
+
+                <label for="Number_vmail_messages">Nombre de messages vocaux</label>
+                <input type="text" id="Number_vmail_messages" required>
+
+                <label for="Total_day_minutes">Minutes d'appels en journée</label>
+                <input type="text" id="Total_day_minutes" required>
+
+                <label for="Total_day_calls">Appels en journée</label>
+                <input type="text" id="Total_day_calls" required>
+
+                <label for="Total_day_charge">Facturation en journée</label>
+                <input type="text" id="Total_day_charge" required>
+
+                <label for="Total_eve_minutes">Minutes d'appels en soirée</label>
+                <input type="text" id="Total_eve_minutes" required>
+
+                <label for="Total_eve_calls">Appels en soirée</label>
+                <input type="text" id="Total_eve_calls" required>
+
+                <label for="Total_eve_charge">Facturation en soirée</label>
+                <input type="text" id="Total_eve_charge" required>
+
+                <label for="Total_night_minutes">Minutes d'appels la nuit</label>
+                <input type="text" id="Total_night_minutes" required>
+
+                <label for="Total_night_calls">Appels la nuit</label>
+                <input type="text" id="Total_night_calls" required>
+
+                <label for="Total_night_charge">Facturation la nuit</label>
+                <input type="text" id="Total_night_charge" required>
+
+                <label for="Total_intl_minutes">Minutes d'appels internationaux</label>
+                <input type="text" id="Total_intl_minutes" required>
+
+                <label for="Total_intl_calls">Appels internationaux</label>
+                <input type="text" id="Total_intl_calls" required>
+
+                <label for="Total_intl_charge">Facturation internationale</label>
+                <input type="text" id="Total_intl_charge" required>
+
+                <label for="Customer_service_calls">Appels au service client</label>
+                <input type="text" id="Customer_service_calls" required>
+
+                <button type="submit">Soumettre</button>
+            </form>
+
+            <div class="result" id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('churnForm').onsubmit = async function(event) {
+            event.preventDefault();
+
+            const data = {
+                State: document.getElementById('State').value,
+                Account_length: parseInt(document.getElementById('Account_length').value),
+                Area_code: parseInt(document.getElementById('Area_code').value),
+                International_plan: document.getElementById('International_plan').value,
+                Voice_mail_plan: document.getElementById('Voice_mail_plan').value,
+                Number_vmail_messages: parseInt(document.getElementById('Number_vmail_messages').value),
+                Total_day_minutes: parseFloat(document.getElementById('Total_day_minutes').value),
+                Total_day_calls: parseInt(document.getElementById('Total_day_calls').value),
+                Total_day_charge: parseFloat(document.getElementById('Total_day_charge').value),
+                Total_eve_minutes: parseFloat(document.getElementById('Total_eve_minutes').value),
+                Total_eve_calls: parseInt(document.getElementById('Total_eve_calls').value),
+                Total_eve_charge: parseFloat(document.getElementById('Total_eve_charge').value),
+                Total_night_minutes: parseFloat(document.getElementById('Total_night_minutes').value),
+                Total_night_calls: parseInt(document.getElementById('Total_night_calls').value),
+                Total_night_charge: parseFloat(document.getElementById('Total_night_charge').value),
+                Total_intl_minutes: parseFloat(document.getElementById('Total_intl_minutes').value),
+                Total_intl_calls: parseInt(document.getElementById('Total_intl_calls').value),
+                Total_intl_charge: parseFloat(document.getElementById('Total_intl_charge').value),
+                Customer_service_calls: parseInt(document.getElementById('Customer_service_calls').value),
+            };
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            const resultDiv = document.getElementById('result');
+            if (result.churn_prediction === 1) {
+                resultDiv.textContent = "Le client va résilier son abonnement .";
+                resultDiv.classList.add("success");
+                resultDiv.classList.remove("error");
+            } else {
+                resultDiv.textContent = "Le client ne va pas résilier son abonnement.";
+                resultDiv.classList.remove("success");
+                resultDiv.classList.add("error");
+            }
+        };
+    </script>
+</body>
+</html>

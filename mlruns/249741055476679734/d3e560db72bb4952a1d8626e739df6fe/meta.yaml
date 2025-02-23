@@ -1,0 +1,15 @@
+artifact_uri: file:///home/chaima/ml_project_chaimatlili/mlruns/249741055476679734/d3e560db72bb4952a1d8626e739df6fe/artifacts
+end_time: 1740253981259
+entry_point_name: ''
+experiment_id: '249741055476679734'
+lifecycle_stage: active
+run_id: d3e560db72bb4952a1d8626e739df6fe
+run_name: data_preparation
+run_uuid: d3e560db72bb4952a1d8626e739df6fe
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740253981199
+status: 3
+tags: []
+user_id: chaima

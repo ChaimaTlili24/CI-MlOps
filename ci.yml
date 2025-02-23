@@ -1,0 +1,34 @@
+name: Continuous Integration Workflow
+
+on:
+  push:
+    branches:
+      - main  # Déclenche le workflow sur la branche principale (main)
+  pull_request:
+    branches:
+      - main  # Déclenche le workflow lors des PR vers la branche main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Utilisation de l'environnement Ubuntu
+
+    steps:
+      # Étape 1 : Checkout du code source
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Étape 2 : Installer les dépendances
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Étape 3 : Exécution des tests
+      - name: Run tests
+        run: |
+          pytest tests/  # Remplace par ta commande pour exécuter tes tests

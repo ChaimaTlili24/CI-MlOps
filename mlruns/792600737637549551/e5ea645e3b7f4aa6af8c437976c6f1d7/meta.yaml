@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/792600737637549551/e5ea645e3b7f4aa6af8c437976c6f1d7/artifacts
+end_time: 1740255492671
+entry_point_name: ''
+experiment_id: '792600737637549551'
+lifecycle_stage: active
+run_id: e5ea645e3b7f4aa6af8c437976c6f1d7
+run_name: overjoyed-snake-929
+run_uuid: e5ea645e3b7f4aa6af8c437976c6f1d7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740255492636
+status: 4
+tags: []
+user_id: chaima

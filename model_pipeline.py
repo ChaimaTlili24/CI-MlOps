@@ -6,6 +6,7 @@ import joblib
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+import logging
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -21,43 +22,73 @@ from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from imblearn.over_sampling import SMOTE
 from mlflow.models.signature import infer_signature
 
+
 # ------------------------------
 # 1) Chargement et préparation des données
 # ------------------------------
+# Configuration du logger
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 def prepare_data(filepath, target_column, test_size=0.2, random_state=42):
+    # Chargement des données
     data = pd.read_csv(filepath)
+
+    # Vérifier les valeurs manquantes et les gérer
+    if data.isnull().any().any():
+        logger.warning("Des valeurs manquantes ont été trouvées dans les données.")
+        data.fillna(
+            data.mean(), inplace=True
+        )  # Remplacer les NaN par la moyenne des colonnes numériques
+
     X = data.drop(columns=[target_column])
     y = data[target_column]
 
-    for col in X.select_dtypes(include=["object"]).columns:
+    # Debug: Afficher les colonnes et leurs types de données avant l'encodage
+    print("Colonnes avant encodage :")
+    print(X.dtypes)
+
+    # Encodage des variables catégorielles
+    categorical_cols = X.select_dtypes(include=["object"]).columns
+    for col in categorical_cols:
         X[col] = LabelEncoder().fit_transform(X[col])
 
-    if y.dtypes == "object":
+    # Debug: Afficher les colonnes et leurs types de données après l'encodage
+    print("Colonnes après encodage :")
+    print(X.dtypes)
+
+    if y.dtype == "object":
         y = LabelEncoder().fit_transform(y)
 
+    # Séparation des données en ensemble d'entraînement et de test
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state
     )
 
+    # Normalisation des données
     scaler = MinMaxScaler()
     X_train = scaler.fit_transform(X_train)
     X_test = scaler.transform(X_test)
 
+    # Application de SMOTE pour équilibrer les classes
     smote = SMOTE(random_state=random_state)
     X_train_res, y_train_res = smote.fit_resample(X_train, y_train)
 
     return X_train_res, X_test, y_train_res, y_test
 
+
 # ------------------------------
 # 2) Entraînement du modèle
 # ------------------------------
-def train_model(X_train, y_train, X_test, y_test, model_path, random_state=42):
-    # Définir l'expérience dans MLflow
-    mlflow.set_experiment("mlflow_project_experiment")
 
-    # Commencer une exécution dans l'expérience définie
-    with mlflow.start_run(run_name="model_training") as run:
-        model = RandomForestClassifier(n_estimators=100, random_state=random_state, class_weight="balanced")
+
+def train_model(X_train, y_train, X_test, y_test, model_path, random_state=42):
+    with mlflow.start_run(run_name="model_training") as _:
+        model = RandomForestClassifier(
+            n_estimators=100, random_state=random_state, class_weight="balanced"
+        )
         model.fit(X_train, y_train)
 
         y_pred = model.predict(X_test)
@@ -78,15 +109,21 @@ def train_model(X_train, y_train, X_test, y_test, model_path, random_state=42):
 
         # Log du modèle complet avec signature
         signature = infer_signature(X_train, model.predict(X_train))
-        mlflow.sklearn.log_model(model, artifact_path="random_forest_model", signature=signature)
+        mlflow.sklearn.log_model(
+            model, artifact_path="random_forest_model", signature=signature
+        )
 
         print(f"Model trained and logged successfully! Accuracy: {accuracy:.4f}")
+
 
 # ------------------------------
 # 3) Évaluation du modèle
 # ------------------------------
+
+
 def evaluate_model(model_path, X_test, y_test):
     with mlflow.start_run(run_name="model_evaluation") as run:
+        logger.info(f"Run ID pour l'évaluation : {run.info.run_id}")
         model = joblib.load(model_path)
         y_pred = model.predict(X_test)
 
@@ -109,29 +146,30 @@ def evaluate_model(model_path, X_test, y_test):
         mlflow.log_artifact("classification_report.txt")
 
         # Générer, afficher et sauvegarder la matrice de confusion
-        plot_confusion_matrix(conf_matrix)
+        plot_confusion_matrix(conf_matrix, labels=list(set(y_test)))
         mlflow.log_artifact("confusion_matrix.png")
 
         print(f"Model evaluated. Accuracy: {accuracy:.4f}")
 
+
 # ------------------------------
 # 4) Sauvegarde du modèle
 # ------------------------------
+
+
 def save_model(model, filepath):
-    """
-    Sauvegarde le modèle sur disque (pickle).
-    """
     joblib.dump(model, filepath)
 
+
 def load_model(filepath):
-    """
-    Charge un modèle depuis un fichier .pkl.
-    """
     return joblib.load(filepath)
+
 
 # ------------------------------
 # 5) Génération de la matrice de confusion
 # ------------------------------
+
+
 def plot_confusion_matrix(conf_matrix, labels, title="Matrice de Confusion"):
     plt.figure(figsize=(8, 6))
     sns.heatmap(

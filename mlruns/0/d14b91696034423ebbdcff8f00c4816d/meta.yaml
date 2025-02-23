@@ -1,0 +1,15 @@
+artifact_uri: mlflow-artifacts:/0/d14b91696034423ebbdcff8f00c4816d/artifacts
+end_time: 1740331700481
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d14b91696034423ebbdcff8f00c4816d
+run_name: model_training
+run_uuid: d14b91696034423ebbdcff8f00c4816d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740331699302
+status: 4
+tags: []
+user_id: chaima
